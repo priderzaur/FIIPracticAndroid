@@ -10,7 +10,14 @@
     <string name="login_activity">Login Activity</string>
     <string name="register_activity">Register Activity</string>
     <string name="login_success">GG! Login bun!</string>
-    <string name="connected_first_activity">Connected First Activity</string>
+    <string name="contacts_activity">Contacts</string>
     <string name="dummy_text">Dummy text</string>
     <string name="preference_login_file_key">com.example.riordachioaia.fiips1.PREF_LOGIN_FILE_KEY</string>
+    <string name="contact_details_activity">Contact details</string>
+    <string name="btn_new_contact_text">Add contact</string>
+    <string name="contact_name_tv">Name</string>
+    <string name="contact_group_tv">Group</string>
+    <string name="contact_phone_tv">Phone</string>
+    <string name="contact_surname_tv">Surname</string>
+    <string name="btn_contact_save_text">Save</string>
 </resources>

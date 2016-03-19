@@ -12,11 +12,19 @@ public class Contact implements Serializable{
     private String name;
     private String surname;
     private String phoneNumber;
+    private String group = "None";
 
     public Contact(String surname, String name, String phoneNo){
         this.name=name;
         this.surname=surname;
         this.phoneNumber=phoneNo;
+    }
+
+    public Contact(String surname, String name, String phoneNo, String group){
+        this.name=name;
+        this.surname=surname;
+        this.phoneNumber=phoneNo;
+        this.group=group;
     }
 
     public String getName() {
@@ -43,5 +51,11 @@ public class Contact implements Serializable{
         this.phoneNumber = phoneNumber;
     }
 
+    public String getGroup() {
+        return group;
+    }
 
+    public void setGroup(String group) {
+        this.group = group;
+    }
 }

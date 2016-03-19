@@ -2,8 +2,10 @@ package com.example.riordachioaia.fiips1;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +31,11 @@ public class ContactsActivity extends Activity implements Serializable {
     private static final String TAG = "ContactsActivity";
     private static final int RESULT_CONTACT_DETAILS= 1;
     private static final int RESULT_NEW = 2;
+    public static String DETAILS_TYPE_KEY="DetailType";
+    public static String DETAILS_TYPE_EDIT="edit";
+    public static String DETAILS_TYPE_NEW="new";
 
-    ListAdapter contactsAdapter;
+    ContactsAdapter contactsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -40,6 +45,15 @@ public class ContactsActivity extends Activity implements Serializable {
         ListView contactListView = (ListView) findViewById(R.id.contacts_list);
         contactsAdapter = new ContactsAdapter(ContactDatabase.contacts);
         contactListView.setAdapter(contactsAdapter);
+
+        findViewById(R.id.btn_new_contact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ContactsActivity.this, ContactDetailsActivity.class);
+                intent.putExtra(DETAILS_TYPE_KEY,DETAILS_TYPE_NEW);
+                startActivityForResult(intent, RESULT_CONTACT_DETAILS);
+            }
+        });
 
         contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -52,6 +66,7 @@ public class ContactsActivity extends Activity implements Serializable {
 
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(ContactsActivity.this, ContactDetailsActivity.class);
+                        intent.putExtra(DETAILS_TYPE_KEY,DETAILS_TYPE_EDIT);
                         intent.putExtra(Contact.contact_key, ContactDatabase.contacts.get(position));
                         startActivityForResult(intent, RESULT_CONTACT_DETAILS);
                         dialog.dismiss();
@@ -68,6 +83,35 @@ public class ContactsActivity extends Activity implements Serializable {
                 });
 
                 dialogBuilder.show();
+            }
+        });
+
+        contactListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ContactsActivity.this);
+                dialogBuilder.setTitle("Confirm");
+                dialogBuilder.setMessage("Do you want to delete " + ContactDatabase.contacts.get(position).getName() + " " + ContactDatabase.contacts.get(position).getSurname() + "?");
+                dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        contactsAdapter.removeContact(position);
+                        contactsAdapter.notifyDataSetChnged();
+                        dialog.dismiss();
+                    }
+
+                });
+                dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+
+                    }
+                });
+                dialogBuilder.show();
+                return true;
             }
         });
     }
@@ -93,7 +137,7 @@ public class ContactsActivity extends Activity implements Serializable {
         if (requestCode == RESULT_CONTACT_DETAILS) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-
+               // contactsAdapter.updateContact(contact,position);
             }
         }
     }
@@ -133,8 +177,32 @@ public class ContactsActivity extends Activity implements Serializable {
             ((TextView)contactListItem.findViewById(R.id.name_tv)).setText(contact.getName());
             ((TextView)contactListItem.findViewById(R.id.surname_tv)).setText(contact.getSurname());
             ((TextView)contactListItem.findViewById(R.id.phoneNumber_tv)).setText(contact.getPhoneNumber());
+            ((TextView)contactListItem.findViewById(R.id.group_tv)).setText(contact.getGroup());
             return contactListItem;
         }
+
+        public void removeContact(int position){
+            contactList.remove(position);
+        }
+
+        public void addContact(Contact contact) {
+            contactList.add(contact);
+        }
+
+        public void updateContact(Contact contact, int position){
+            contactList.set(position,contact);
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_login_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("logged","no");
+        editor.commit();
+        this.finish();
     }
 }
 

@@ -17,8 +17,8 @@
         </activity>
         <activity android:name=".LoginActivity" android:label="@string/login_activity"/>
         <activity android:name=".RegisterActivity" android:label="@string/register_activity"/>
-        <activity android:name=".ContactsActivity" android:label="@string/connected_first_activity"/>
-
+        <activity android:name=".ContactsActivity" android:label="@string/contacts_activity"/>
+        <activity android:name=".ContactDetailsActivity" android:label="@string/contact_details_activity"/>
     </application>
 
 </manifest>

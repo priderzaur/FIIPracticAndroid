@@ -1,16 +1,22 @@
 package com.example.riordachioaia.fiips1;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.riordachioaia.fiips1.persistance.Contact;
 
 //modificare element din lista?, cu click, activity nou!//dialog la submit
 //adapter notifyDataSetChanged()
 // la long click, dialog care sa spuna "are you sure you want to delete?"
+
+
 //buton add la fundul listei
 //adresa sub telefon sau altceva, nu neaparat adresa
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -22,6 +28,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_login_file_key), Context.MODE_PRIVATE);
+
+        if (sharedPreferences.getString("logged", "").equals("yes")){
+            Intent intent = new Intent(this, ContactsActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         findViewById(R.id.btn_login).setOnClickListener(this);
         findViewById(R.id.btn_register).setOnClickListener(this);
     }

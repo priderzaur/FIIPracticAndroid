@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         sharedPreferences = getSharedPreferences(getString(R.string.preference_login_file_key), Context.MODE_PRIVATE);
 
-        if (sharedPreferences.getString("logged", "").equals("logged")){
+        if (sharedPreferences.getString("saved", "").equals("yes")){
             String email = sharedPreferences.getString("username","");
             String password = sharedPreferences.getString("password", "");
             ((EditText)findViewById(R.id.et_email)).setText(email);
@@ -59,7 +59,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("username", email);
                     editor.putString("password", password);
-                    editor.putString("logged", "logged");
+                    editor.putString("saved", "yes");
+                    editor.putString("logged", "yes");
                     editor.commit();
 
                     Toast.makeText(LoginActivity.this, "Login successfull", Toast.LENGTH_LONG).show();
