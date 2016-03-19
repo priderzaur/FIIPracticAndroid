@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">FIIPs1</string>
+    <string name="tv_start_text">Start</string>
+    <string name="tv_email_text">Email *</string>
+    <string name="tv_pass_text">Password *</string>
+    <string name="tv_age_text">Age *</string>
+    <string name="btn_login_text">Login</string>
+    <string name="btn_resest_creds_text">Reset credentials</string>
+    <string name="btn_register_text">Register</string>
+    <string name="login_activity">Login Activity</string>
+    <string name="register_activity">Register Activity</string>
+    <string name="login_success">GG! Login bun!</string>
+    <string name="connected_first_activity">Connected First Activity</string>
+    <string name="dummy_text">Dummy text</string>
+    <string name="preference_login_file_key">com.example.riordachioaia.fiips1.PREF_LOGIN_FILE_KEY</string>
+</resources>
