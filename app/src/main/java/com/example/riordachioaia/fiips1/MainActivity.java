@@ -15,8 +15,6 @@ import com.example.riordachioaia.fiips1.persistance.Contact;
 //modificare element din lista?, cu click, activity nou!//dialog la submit
 //adapter notifyDataSetChanged()
 // la long click, dialog care sa spuna "are you sure you want to delete?"
-
-
 //buton add la fundul listei
 //adresa sub telefon sau altceva, nu neaparat adresa
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {

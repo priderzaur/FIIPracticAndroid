@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -21,6 +22,7 @@ import com.example.riordachioaia.fiips1.persistance.Contact;
 import com.example.riordachioaia.fiips1.persistance.ContactDatabase;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,11 +31,12 @@ import java.util.List;
 public class ContactsActivity extends Activity implements Serializable {
 
     private static final String TAG = "ContactsActivity";
-    private static final int RESULT_CONTACT_DETAILS= 1;
-    private static final int RESULT_NEW = 2;
-    public static String DETAILS_TYPE_KEY="DetailType";
-    public static String DETAILS_TYPE_EDIT="edit";
-    public static String DETAILS_TYPE_NEW="new";
+    private static final int INTENT_CONTACT_DETAILS= 1;
+
+    public static final String DETAILS_TYPE_KEY="DetailType";
+    public static final String DETAILS_TYPE_EDIT="edit";
+    public static final String DETAILS_TYPE_NEW="new";
+    public static final String POSITION_KEY="position";
 
     ContactsAdapter contactsAdapter;
 
@@ -51,7 +54,7 @@ public class ContactsActivity extends Activity implements Serializable {
             public void onClick(View v) {
                 Intent intent = new Intent(ContactsActivity.this, ContactDetailsActivity.class);
                 intent.putExtra(DETAILS_TYPE_KEY,DETAILS_TYPE_NEW);
-                startActivityForResult(intent, RESULT_CONTACT_DETAILS);
+                startActivityForResult(intent, INTENT_CONTACT_DETAILS);
             }
         });
 
@@ -61,14 +64,16 @@ public class ContactsActivity extends Activity implements Serializable {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ContactsActivity.this);
                 dialogBuilder.setTitle("Confirm");
-                dialogBuilder.setMessage("Do you want to edit " + ContactDatabase.contacts.get(position).getName() + " " + ContactDatabase.contacts.get(position).getSurname() + "?");
+                dialogBuilder.setMessage("Do you want to edit " + ((Contact)contactsAdapter.getItem(position)).getName()
+                        + " " + ((Contact)contactsAdapter.getItem(position)).getSurname() + "?");
                 dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(ContactsActivity.this, ContactDetailsActivity.class);
                         intent.putExtra(DETAILS_TYPE_KEY,DETAILS_TYPE_EDIT);
-                        intent.putExtra(Contact.contact_key, ContactDatabase.contacts.get(position));
-                        startActivityForResult(intent, RESULT_CONTACT_DETAILS);
+                        intent.putExtra(Contact.contact_key, ((Contact)contactsAdapter.getItem(position)));
+                        intent.putExtra(POSITION_KEY,position);
+                        startActivityForResult(intent, INTENT_CONTACT_DETAILS);
                         dialog.dismiss();
                     }
 
@@ -91,12 +96,13 @@ public class ContactsActivity extends Activity implements Serializable {
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ContactsActivity.this);
                 dialogBuilder.setTitle("Confirm");
-                dialogBuilder.setMessage("Do you want to delete " + ContactDatabase.contacts.get(position).getName() + " " + ContactDatabase.contacts.get(position).getSurname() + "?");
+                dialogBuilder.setMessage("Do you want to delete " + ((Contact)contactsAdapter.getItem(position)).getName() +
+                        " " + ((Contact)contactsAdapter.getItem(position)).getSurname() + "?");
                 dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
                         contactsAdapter.removeContact(position);
-                        contactsAdapter.notifyDataSetChnged();
+                        contactsAdapter.notifyDataSetChanged();
                         dialog.dismiss();
                     }
 
@@ -116,28 +122,23 @@ public class ContactsActivity extends Activity implements Serializable {
         });
     }
 
-    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which){
-                case DialogInterface.BUTTON_POSITIVE:
-                    //Yes button clicked
-                    break;
-
-                case DialogInterface.BUTTON_NEGATIVE:
-                    //No button clicked
-                    break;
-            }
-        }
-    };
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == RESULT_CONTACT_DETAILS) {
+        if (requestCode == INTENT_CONTACT_DETAILS) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-               // contactsAdapter.updateContact(contact,position);
+                String intentType = data.getStringExtra(DETAILS_TYPE_KEY);
+                Contact contact = (Contact) data.getSerializableExtra(Contact.contact_key);
+
+                if (intentType.equals(DETAILS_TYPE_EDIT)) {
+                    int contactPosition=data.getIntExtra(POSITION_KEY,0);
+                    contactsAdapter.updateContact(contact,contactPosition);
+                } else {
+                    contactsAdapter.addContact(contact);
+                }
+
+                contactsAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -149,18 +150,14 @@ public class ContactsActivity extends Activity implements Serializable {
             this.contactList = contactList;
         }
 
-        public void notifyDataSetChnged(){
-
-        }
-
         @Override
         public int getCount() {
-            return ContactDatabase.contacts.size();
+            return contactList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return null;
+            return contactList.get(position);
         }
 
         @Override
@@ -183,6 +180,7 @@ public class ContactsActivity extends Activity implements Serializable {
 
         public void removeContact(int position){
             contactList.remove(position);
+            Log.d(TAG, String.valueOf(contactList.size()));
         }
 
         public void addContact(Contact contact) {

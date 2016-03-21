@@ -69,14 +69,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     finish();
                 }
 
-                 /*{
-                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder (LoginActivity.this);
-                    dialogBuilder.setTitle(getString(R.string.app_name));
-                    dialogBuilder.setMessage(getResources().getString(R.string.login_success));
-                    dialogBuilder.setPositiveButton("Ok",null);
-                    dialogBuilder.show();
-
-                }*/
                 break;
             case R.id.btn_reset_creds:
                 ((EditText) findViewById(R.id.et_email)).setText("");
