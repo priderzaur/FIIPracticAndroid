@@ -23,7 +23,7 @@ public class Utils {
     }
 
     public final static boolean isValidAge(int age){
-        if (age<=12){
+        if (age<12){
             return false;
         }
         return true;

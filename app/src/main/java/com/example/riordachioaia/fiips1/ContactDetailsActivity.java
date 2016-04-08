@@ -25,49 +25,55 @@ import java.io.Serializable;
 public class ContactDetailsActivity extends AppCompatActivity implements Serializable{
     private static final String TAG = "ContactDetailsActivity";
 
-    String intentType;
-    int contactPosition;
-    String initialName, initialSurname, initialPhoneNumber, initialGroup, name, surname, phoneNumber, group;
+    private int contactPosition, id=0;
+    private String initialName, initialSurname, initialPhoneNumber, initialGroup, name, surname, phoneNumber, group;
+    private EditText mFirstNameET, mLastNameET, mPhoneNumberET, mGroupET;
+    private Contact contact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_details);
 
-        intentType = getIntent().getStringExtra(ContactsActivity.DETAILS_TYPE_KEY);
-        if (intentType.equals(ContactsActivity.DETAILS_TYPE_EDIT)) {
-            Contact contact = (Contact) getIntent().getSerializableExtra(Contact.contact_key);
-            contactPosition = getIntent().getIntExtra(ContactsActivity.POSITION_KEY,0);
-            ((EditText) findViewById(R.id.et_contact_name)).setText(contact.getName());
-            ((EditText) findViewById(R.id.et_contact_surname)).setText(contact.getSurname());
-            ((EditText) findViewById(R.id.et_contact_phoneNumber)).setText(contact.getPhoneNumber());
-            ((EditText) findViewById(R.id.et_contact_group)).setText(contact.getGroup());
-        }
-        initialName=((EditText)findViewById(R.id.et_contact_name)).getText().toString();
-        initialSurname=((EditText)findViewById(R.id.et_contact_surname)).getText().toString();
-        initialPhoneNumber=((EditText)findViewById(R.id.et_contact_phoneNumber)).getText().toString();
-        initialGroup= ((EditText)findViewById(R.id.et_contact_group)).getText().toString();
+        mFirstNameET = (EditText) findViewById(R.id.et_contact_name);
+        mLastNameET = (EditText) findViewById(R.id.et_contact_surname);
+        mPhoneNumberET = (EditText) findViewById(R.id.et_contact_phoneNumber);
+        mGroupET = (EditText) findViewById(R.id.et_contact_group);
+
+        contact = (Contact) getIntent().getSerializableExtra(Contact.contact_key);
+        if (contact != null) {
+            id=contact.getId();
+            mFirstNameET.setText(contact.getName());
+            mLastNameET.setText(contact.getSurname());
+            mPhoneNumberET.setText(contact.getPhoneNumber());
+            mGroupET.setText(contact.getGroup());
+        };
+
+        contactPosition = getIntent().getIntExtra(ContactsActivity.POSITION_KEY, -1);
+
+        initialName=mFirstNameET.getText().toString();
+        initialSurname=mLastNameET.getText().toString();
+        initialPhoneNumber=mPhoneNumberET.getText().toString();
+        initialGroup=mGroupET.getText().toString();
 
         findViewById(R.id.btn_contact_save).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                name=((EditText)findViewById(R.id.et_contact_name)).getText().toString();
-                surname=((EditText)findViewById(R.id.et_contact_surname)).getText().toString();
-                phoneNumber=((EditText)findViewById(R.id.et_contact_phoneNumber)).getText().toString();
-                group= ((EditText)findViewById(R.id.et_contact_group)).getText().toString();
-                Log.d(TAG,"after click " + name);
+                name=mFirstNameET.getText().toString();
+                surname=mLastNameET.getText().toString();
+                phoneNumber=mPhoneNumberET.getText().toString();
+                group=mGroupET.getText().toString();
+
                 if (TextUtils.isEmpty(name) || TextUtils.isEmpty(surname)||TextUtils.isEmpty(phoneNumber) || TextUtils.isEmpty(group)) {
                     Toast.makeText(ContactDetailsActivity.this, "No empty fields allowed", Toast.LENGTH_LONG).show();
                 } else {
 
-                    Contact savedContact = new Contact(name, surname, phoneNumber, group);
-
+                    contact = new Contact(name, surname, phoneNumber, group);
+                    contact.setId(id);
                     Intent resultIntent = new Intent();
-                    resultIntent.putExtra(Contact.contact_key, savedContact);
-                    resultIntent.putExtra(ContactsActivity.DETAILS_TYPE_KEY, intentType);
-                    if (intentType.equals(ContactsActivity.DETAILS_TYPE_EDIT)){
-                        resultIntent.putExtra(ContactsActivity.POSITION_KEY,contactPosition);
-                    }
-                    setResult(RESULT_OK,resultIntent);
+                    resultIntent.putExtra(Contact.contact_key, contact);
+                    resultIntent.putExtra(ContactsActivity.POSITION_KEY,contactPosition);
+                    setResult(RESULT_OK, resultIntent);
+                    Log.d(TAG, name+surname+phoneNumber+group);
                     finish();
                 }
             }
@@ -77,10 +83,10 @@ public class ContactDetailsActivity extends AppCompatActivity implements Seriali
     @Override
     public void onBackPressed() {
 
-        name = ((EditText) findViewById(R.id.et_contact_name)).getText().toString();
-        surname = ((EditText) findViewById(R.id.et_contact_surname)).getText().toString();
-        phoneNumber = ((EditText) findViewById(R.id.et_contact_phoneNumber)).getText().toString();
-        group = ((EditText) findViewById(R.id.et_contact_group)).getText().toString();
+        name = mFirstNameET.getText().toString();
+        surname = mLastNameET.getText().toString();
+        phoneNumber = mPhoneNumberET.getText().toString();
+        group = mGroupET.getText().toString();
 
         if (!initialName.equals(name) || !initialSurname.equals(surname) || !initialPhoneNumber.equals(phoneNumber) || !initialGroup.equals(group)) {
 

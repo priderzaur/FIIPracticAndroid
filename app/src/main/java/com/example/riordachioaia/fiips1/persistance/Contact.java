@@ -13,14 +13,17 @@ public class Contact implements Serializable{
     private String surname;
     private String phoneNumber;
     private String group = "None";
+    private int id;
 
-    public Contact(String surname, String name, String phoneNo){
+    public Contact(String name, String surname, String phoneNo, String group){
         this.name=name;
         this.surname=surname;
         this.phoneNumber=phoneNo;
+        this.group=group;
     }
 
-    public Contact(String surname, String name, String phoneNo, String group){
+    public Contact(int id, String name, String surname, String phoneNo, String group){
+        this.id=id;
         this.name=name;
         this.surname=surname;
         this.phoneNumber=phoneNo;
@@ -57,5 +60,22 @@ public class Contact implements Serializable{
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Contact) {
+            return Integer.valueOf(((Contact) o).id).equals(this.id);
+        }
+
+        return super.equals(o);
     }
 }

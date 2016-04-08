@@ -1,6 +1,7 @@
 package com.example.riordachioaia.fiips1;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.riordachioaia.fiips1.persistance.CredentialDatabase;
+import com.example.riordachioaia.fiips1.persistance.DatabaseHelperFIIPRacticAndroid;
 import com.example.riordachioaia.fiips1.util.Utils;
 
 /**
@@ -21,10 +22,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = "LoginActivity";
     SharedPreferences sharedPreferences;
 
+    private DatabaseHelperFIIPRacticAndroid database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        database = DatabaseHelperFIIPRacticAndroid.getInstance(this.getApplicationContext());// new DatabaseHelperFIIPRacticAndroid(getApplicationContext()); //
 
         sharedPreferences = getSharedPreferences(getString(R.string.preference_login_file_key), Context.MODE_PRIVATE);
 
@@ -52,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(LoginActivity.this, "Email or password empty", Toast.LENGTH_LONG).show();
                 } else if (!Utils.isValidEmail(email)) {
                     Toast.makeText(LoginActivity.this, "Invalid email format", Toast.LENGTH_LONG).show();
-                } else if (!CredentialDatabase.verifyExistingCredentials(email, password)) {
+                } else if (!database.areCredentialsCorrect(email,password)) {
                     Toast.makeText(LoginActivity.this, "Wrong credentials", Toast.LENGTH_LONG).show();
                 } else {
 
@@ -65,7 +70,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     Toast.makeText(LoginActivity.this, "Login successfull", Toast.LENGTH_LONG).show();
 
-                    setResult(RESULT_OK);
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra(MainActivity.KEY_EMAIL,email);
+                    setResult(RESULT_OK,resultIntent);
                     finish();
                 }
 
